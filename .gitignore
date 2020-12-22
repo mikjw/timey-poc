@@ -3,15 +3,6 @@
 Icon?
 ._*
 
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-.directory
-*~
-
 
 # npm
 node_modules
@@ -19,9 +10,7 @@ package-lock.json
 *.log
 *.gz
 
+.env
 
-# Coveralls
 coverage
-
-# Benchmarking
-benchmarks/graphs
+scratch
