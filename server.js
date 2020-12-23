@@ -1,11 +1,15 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config();
+
+const Time = require('./models/time.model')
 
 const PORT = 5000;
 
 app.use(express.json());
+app.use(cors());
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true } );
@@ -22,14 +26,13 @@ app.get('/', (req, res) => {
   res.send('home');
 })
 
-// app.get('/times', (req, res) => {
-//   Time.find()
-//   .then(times => res.json(times))
-//   .catch(err => res.status(400).json('Error: ' + err));
-// })
+app.get('/times', (req, res) => {
+  Time.find()
+  .then(times => res.json(times))
+  .catch(err => res.status(400).json('Error: ' + err));
+})
 
 app.post('/times/add/', (req, res) => {
-  //console.log(req);
   console.log(req.body);
   const title = req.body.title;
   const seconds = Number(req.body.seconds);
