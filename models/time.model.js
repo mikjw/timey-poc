@@ -7,11 +7,11 @@ const timeSchema = new Schema({
     required: true
   },
   seconds: {
-    type: number,
+    type: Number,
     required: true
   }
-})
+});
 
-const Time = mongoose.model('Time', timeSchema);
+const Time = mongoose.model('Times', timeSchema);
 
 module.exports = Time;
