@@ -1,15 +1,13 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const cors = require('cors');
 require('dotenv').config();
 
 const Time = require('./models/time.model')
 
-const PORT = 5000;
+const PORT = 5001;
 
 app.use(express.json());
-app.use(cors());
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true } );
