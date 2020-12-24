@@ -9,7 +9,7 @@ const Time = require('./models/time.model')
 const PORT = 5001;
 
 app.use(express.json());
-app.use(cors);
+app.use(cors());
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true } );
