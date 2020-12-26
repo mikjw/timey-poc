@@ -1,11 +1,11 @@
 const express = require('express');
-const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
 const Time = require('./models/time.model')
 
+const app = express();
 const PORT = 5001;
 
 app.use(express.json());
@@ -48,6 +48,18 @@ app.post('/times/add/', (req, res) => {
   .then(() => res.json('Time added succesfully'))
   .catch(err => res.status(400).json('Error: ' + err));
 })
+
+app.post('/times/update/:id', (req, res) => {
+  Time.findById(req.params.id)
+    .then(time => {
+      time.title = req.body.title;
+      time.seconds = req.body.seconds;
+      time.save()
+        .then(() => res.json(`Time ${req.params.id} updated`))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+  })
 
 app.listen(PORT, () => {
   console.log(`Listenining on ${PORT}`);
