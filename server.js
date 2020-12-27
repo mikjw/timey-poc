@@ -4,13 +4,16 @@ const cors = require('cors');
 require('dotenv').config();
 
 const timesRouter = require('./routes/timeRoutes');
+const usersRouter = require('./routes/userRoutes');
 
 const app = express();
 const PORT = 5001;
 
 app.use(express.json());
 app.use(cors());
+
 app.use('/times', timesRouter);
+app.use('/users', usersRouter);
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true } );
