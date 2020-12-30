@@ -23,4 +23,16 @@ router.route('/add').post((req, res) => {
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
+router.route('/login').post((req, res) => {
+  User.find({ email: req.body.email })
+    .then(user => {
+      if (user[0].password === req.body.password) {
+        res.json('Sucess')
+      } else {
+        res.json('Wrong user-password combination')
+      }
+    })
+    .catch(err => res.status(400).json('Error: ' + err))
+});
+
 module.exports = router;
