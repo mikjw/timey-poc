@@ -16,7 +16,8 @@ app.use('/times', timesRouter);
 app.use('/users', usersRouter);
 
 const uri = process.env.ATLAS_URI;
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true } );
+// mongoose.set();
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true } );
 const connection = mongoose.connection;
 connection.once('open', () => {
   console.log("Connected to Atlas");
@@ -26,7 +27,7 @@ connection.once('open', () => {
 })
 
 app.get('/', (req, res) => {
-  res.send('home');
+  res.json('home');
 })
 
 app.listen(PORT, () => {
