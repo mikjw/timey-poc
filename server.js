@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(cors());
 
 app.post('/register', async (req, res) => {
+  console.log(req);
   const email = req.body.email;
   const password = await bcrypt.hash(req.body.password, 12);
   const newUser = new User({
@@ -27,9 +28,10 @@ app.post('/register', async (req, res) => {
     res.json('User added succesfully'),
     console.log(newUser);
   })
-  .catch(err => 
-    console.error(err),
-    res.status(400).json('Email already in use'))
+  .catch(err => {
+  console.error(err)
+  res.status(400).json(err)
+  })
 });
 
 app.post('/login', (req, res) => {
