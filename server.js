@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cors());
 
 app.post('/register', async (req, res) => {
-  console.log(req);
+  // console.log(req);
   const email = req.body.email;
   const password = await bcrypt.hash(req.body.password, 12);
   const newUser = new User({
@@ -25,8 +25,8 @@ app.post('/register', async (req, res) => {
   })
   newUser.save()
   .then(() => {
-    res.json('User added succesfully'),
-    console.log(newUser);
+    res.json('User added succesfully')
+    console.log("Added new user:\n" + newUser);
   })
   .catch(err => {
   console.error(err)
