@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const session = require('express-session')
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
@@ -14,6 +15,20 @@ const PORT = 5001;
 
 app.use(express.json());
 app.use(cors());
+
+app.use(
+  session({
+  secret: process.env.COOKIE_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {}
+  })
+)
+
+app.use( (req, res, next) => {
+  console.log('req.session: ' + req.session);
+  return next();
+});
 
 app.post('/register', async (req, res) => {
   // console.log(req);
