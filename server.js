@@ -11,7 +11,7 @@ const usersRouter = require('./routes/userRoutes');
 const User = require('./models/user.model');
 
 const app = express();
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use(cors());
@@ -26,7 +26,7 @@ app.use(
 )
 
 app.use( (req, res, next) => {
-  console.log('req.session: ' + req.session);
+  console.log('req.session:\n', req.session);
   return next();
 });
 
