@@ -1,10 +1,11 @@
 require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session')
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+require('./passportConfig')(passport);
 
 const timesRouter = require('./routes/timeRoutes');
 const usersRouter = require('./routes/userRoutes');
@@ -29,15 +30,22 @@ app.use(
   resave: false,
   saveUninitialized: true,
   store: new MongoStore({ mongooseConnection: connection, collection: 'sessions' }),
-  cookie: {secure: false, httpOnly: false}
+  cookie: {secure: false, httpOnly: true}
   })
 )
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// --------------------------------------------- session visibilty mw --------------------------------------------------
 
 app.use( (req, res, next) => {
   console.log('id: ', req.session.id);
   console.log('cookie: ', req.session.cookie);
   return next();
 });
+
+// --------------------------------------------- end session visibility mw ----------------------------------------------
 
 app.post('/register', async (req, res) => {
   const email = req.body.email;
@@ -58,21 +66,20 @@ app.post('/register', async (req, res) => {
   req.session.email = req.body.email;
 });
 
-app.post('/login', (req, res) => {
-  User.findOne({ email: req.body.email })
-  .then(user => {
-    if (!user) { 
-      res.json('Email or password invalid');
-    }
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user) => {
+    if (err) throw err;
+    if (!user) res.json('email or password invalid');
     else {
-      bcrypt.compare(req.body.password, user.password, (err, result) => {
-        if (err) console.log('Error: ' + err);
-        else if (result === true) {res.json('Success') }
-        else { res.json('Email or password invalid') }
-      })
+      req.logIn(user, (err) => {
+        res.json('success');
+      });
     }
-  })
-  .catch(err => res.status(400).json('Error: ' + err))
+  })(req, res, next);
+});
+
+app.get('/requser', (req, res) => {
+  res.json(req.user); 
 });
 
 app.use('/times', timesRouter);
