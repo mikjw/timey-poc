@@ -9,6 +9,9 @@ const timeSchema = new Schema({
   seconds: {
     type: Number,
     required: true
+  }, 
+  workspace: {
+    type: String
   }
 });
 

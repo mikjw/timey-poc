@@ -10,9 +10,12 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
+  }, 
+  workspace: {
+    type: String
   }
 });
 
-const Time = mongoose.model('Users', userSchema);
+const User = mongoose.model('Users', userSchema);
 
-module.exports = Time;
+module.exports = User;
