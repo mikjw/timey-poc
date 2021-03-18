@@ -7,9 +7,6 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 require('./passportConfig')(passport);
 
-const timesRouter = require('./routes/timeRoutes');
-const usersRouter = require('./routes/userRoutes');
-
 const User = require('./models/user.model');
 
 const app = express();
@@ -22,7 +19,7 @@ const connection = mongoose.connection;
 const MongoStore = require('connect-mongo')(session);
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
 
 app.use(
   session({
@@ -40,8 +37,8 @@ app.use(passport.session());
 // --------------------------------------------- session visibilty mw --------------------------------------------------
 
 app.use( (req, res, next) => {
-  console.log('id: ', req.session.id);
-  console.log('cookie: ', req.session.cookie);
+  console.log('mware id: ', req.session.id);
+  console.log('mware cookie: ', req.session.cookie);
   return next();
 });
 
@@ -67,6 +64,8 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/login', (req, res, next) => {
+  console.log('req: ', req);
+  console.log('req.cookie: ', req.cookie);
   passport.authenticate('local', (err, user) => {
     if (err) throw err;
     if (!user) res.json('email or password invalid');
@@ -79,11 +78,16 @@ app.post('/login', (req, res, next) => {
 });
 
 app.get('/requser', (req, res) => {
-  res.json(req.user); 
+  res.send(req.user); 
 });
+
+const timesRouter = require('./routes/timeRoutes');
+const usersRouter = require('./routes/userRoutes');
+const workspacesRouter = require('./routes/workspaceRoutes');
 
 app.use('/times', timesRouter);
 app.use('/users', usersRouter);
+app.use('/workspaces', workspacesRouter);
 
 connection.once('open', () => {
   console.log('Connected to Atlas');
