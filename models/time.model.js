@@ -12,6 +12,11 @@ const timeSchema = new Schema({
   }, 
   workspace: {
     type: String
+  },
+  user: {
+    type: String,
+    required: true,
+    immutable: true
   }
 });
 
