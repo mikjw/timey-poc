@@ -25,7 +25,7 @@ router.route('/all').get(checkAuthentication, (req, res) => {
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
-router.route('/add').post((req, res) => {
+router.route('/add').post(checkAuthentication, (req, res) => {
   const title = req.body.title;
   const seconds = Number(req.body.seconds);
   const workspace = req.body.workspace;
@@ -37,7 +37,7 @@ router.route('/add').post((req, res) => {
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
-router.route('/update/:id').post((req, res) => {
+router.route('/update/:id').post(checkAuthentication, (req, res) => {
   Time.findById(req.params.id)
     .then(time => {
       time.title = req.body.title;
@@ -49,7 +49,7 @@ router.route('/update/:id').post((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 })
 
-router.route('/:id').delete((req, res) => {
+router.route('/:id').delete(checkAuthentication, (req, res) => {
   Time.findByIdAndDelete(req.params.id)
     .then(() => res.json('Time deleted'))
     .catch(err => res.status(400).json('Error: ' + err));
