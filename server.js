@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 require('./passportConfig')(passport);
 const User = require('./models/user.model');
+const bodyParser = require("body-parser")
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -23,8 +24,12 @@ const connection = mongoose.connection;
 
 const MongoStore = require('connect-mongo')(session);
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
+
+
+// Set CORS headers 
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
@@ -48,7 +53,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-// --------------------------------------------- Login Routes ----------------------------------------------
+/**
+ * Register a new user 
+ */
 
 app.post('/register', async (req, res) => {
   const email = req.body.email;
@@ -59,15 +66,20 @@ app.post('/register', async (req, res) => {
   })
   newUser.save()
   .then(() => {
-    res.json('User added succesfully')
+    res.json({"message": "success"})
     console.log('Added new user:\n' + newUser);
   })
   .catch(err => {
-  console.error(err)
+    console.error(err)
   res.status(400).json(err)
   })
   req.session.email = req.body.email;
 });
+
+
+/**
+ * Log in with user details 
+ */
 
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user) => {
@@ -84,17 +96,11 @@ app.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-app.get('/requser', (req, res) => {
-  console.log('req.user: ', req.user);
-  res.send(req.user); 
-});
 
 const timesRouter = require('./routes/timeRoutes');
-const usersRouter = require('./routes/userRoutes');
 const workspacesRouter = require('./routes/workspaceRoutes');
 
 app.use('/times', timesRouter);
-app.use('/users', usersRouter);
 app.use('/workspaces', workspacesRouter);
 
 connection.once('open', () => {
@@ -111,3 +117,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Listenining on ${PORT}`);
 })
+
+module.exports = app;
