@@ -2,12 +2,36 @@ const router = require('express').Router();
 const Time = require('../models/time.model')
 const { checkAuthentication } = require('../authHelper');
 
+
+
+/**
+ * get all times
+ */
+
+router.route('/all').get((req, res) => {
+  Time.find()
+  .then(times => {
+    res.json(times);
+  })
+  .catch(err => res.status(400).json('Error: ' + err));
+})
+
+
+/**
+ * find a time by ID
+ */
+
 router.route('/:id').get(checkAuthentication, (req, res) => {
   Time.findById(req.params.id)
   .then(time => {
     res.json(time);
   })
 })
+
+
+/**
+ * find a time by user
+ */
 
 router.route('/user/:user').get(checkAuthentication, (req, res) => {
   Time.find({ user: req.params.user })
@@ -17,13 +41,11 @@ router.route('/user/:user').get(checkAuthentication, (req, res) => {
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
-router.route('/all').get(checkAuthentication, (req, res) => {
-  Time.find()
-  .then(times => {
-    res.json(times);
-  })
-  .catch(err => res.status(400).json('Error: ' + err));
-})
+
+
+/**
+ * save a new time record
+ */
 
 router.route('/add').post(checkAuthentication, (req, res) => {
   const title = req.body.title;
@@ -37,6 +59,11 @@ router.route('/add').post(checkAuthentication, (req, res) => {
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
+
+/**
+ * update a time record
+ */
+
 router.route('/update/:id').post(checkAuthentication, (req, res) => {
   Time.findById(req.params.id)
     .then(time => {
@@ -48,6 +75,11 @@ router.route('/update/:id').post(checkAuthentication, (req, res) => {
     })
     .catch(err => res.status(400).json('Error: ' + err));
 })
+
+
+/**
+ * update a time record
+ */
 
 router.route('/:id').delete(checkAuthentication, (req, res) => {
   Time.findByIdAndDelete(req.params.id)
