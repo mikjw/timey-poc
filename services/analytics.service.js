@@ -5,11 +5,19 @@
 function getAnalytics(input) {
   let result = 
   {
-    "count" : 0
+    "count" : 0,
+    "avgSeconds" : 0
   };
+
+  let count = 0;
+  let total = 0;
   input.forEach(element => {
-    result["count"]++
-  });
+    count++;
+    total += element.seconds;
+  })
+
+  result["count"] = count;
+  result["avgSeconds"] = total / count;
   return result;
 }
 
