@@ -1,6 +1,5 @@
 
 const expect = require("chai").expect;
-const sinon = require("sinon");
 const analyticsService = require("../services/analytics.service");
 const mockResponses = require("./mockResponse");
 
