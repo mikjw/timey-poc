@@ -1,5 +1,5 @@
 /**
- * Calculate analytics based on an input array of times
+ * Calculate analytics based on an input array of time objects
  */
 
 function getAnalytics(input) {
