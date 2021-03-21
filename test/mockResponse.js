@@ -52,7 +52,21 @@ const second = () => {
   return data;
 }
 
+const third = () => {
+  const data = 
+      {
+        _id: '605681a6cf123hh7b47d97db',
+        title: 'Calls',
+        seconds: 125,
+        workspace: '605502c25db13d06230179c9',
+        user: '605680eccfc68c87b47d97da',
+        __v: 0
+      }
+  return data;
+}
+
 module.exports = {
   first,
-  second
+  second, 
+  third
 }
