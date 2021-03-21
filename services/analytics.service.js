@@ -1,29 +1,31 @@
 /**
- * Calculate analytics based on an input array of time objects
+ * Calculate count and average seconds for time records
  */
 
 function getAnalytics(input) {
-  console.log('inp: ', input);
-  console.log('input type: ', typeof(input));
   let result = 
   {
     "count" : 0,
     "avgSeconds" : 0
   };
 
+  // Handle case where input is single object
   if (!Array.isArray(input)) {
     result["count"] = 1;
     result["avgSeconds"] = input.seconds;
-  } else if (Array.isArray(input)) {
+  } 
+  
+  // Iterate through array input 
+  else if (Array.isArray(input)) {
     let count = 0;
-    let total = 0;
+    let totalSeconds = 0;
     input.forEach(element => {
       count++;
-      total += element.seconds;
+      totalSeconds += element.seconds;
     })
 
     result["count"] = count;
-    result["avgSeconds"] = Math.round(total / count);
+    result["avgSeconds"] = Math.round(totalSeconds / count);
   }
 return result;
 }
