@@ -1,10 +1,15 @@
-const { json } = require('express')
+/**
+ * Calculate analytics based on an input array of times
+ */
 
 function getAnalytics(input) {
   let result = 
   {
-    "count" : 3
+    "count" : 0
   };
+  input.forEach(element => {
+    result["count"]++
+  });
   return result;
 }
 
