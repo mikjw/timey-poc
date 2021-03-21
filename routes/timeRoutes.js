@@ -1,7 +1,12 @@
 const router = require('express').Router();
 const Time = require('../models/time.model')
-const { checkAuthentication } = require('../authHelper');
+const { checkAuthentication } = require('../helpers/authHelper');
+const mongo = require('../dao/times-mongo');
+let db = "";
 
+if (process.env.NODE_ENV !== "test") { 
+  db = mongo 
+}
 
 
 /**
@@ -9,7 +14,7 @@ const { checkAuthentication } = require('../authHelper');
  */
 
 router.route('/all').get((req, res) => {
-  Time.find()
+  db.getAllTimes(req, res)
   .then(times => {
     res.json(times);
   })
@@ -40,7 +45,6 @@ router.route('/user/:user').get(checkAuthentication, (req, res) => {
   })
   .catch(err => res.status(400).json('Error: ' + err));
 })
-
 
 
 /**
