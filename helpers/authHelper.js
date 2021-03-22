@@ -4,7 +4,7 @@ module.exports = {
       console.log('AUTH YES')
       return next() 
     } 
-    console.log('AUTH YES')
+    console.log('AUTH NO')
     res.sendStatus(403);
     }
   }
