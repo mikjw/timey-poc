@@ -7,11 +7,12 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 require('./passportConfig')(passport);
 const User = require('./models/user.model');
-const bodyParser = require("body-parser")
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+
+// Establish mongodb connection
 const MongoUrl = process.env.MONGO_CONTAINER
 mongoose.connect(MongoUrl, { 
   useNewUrlParser: true, 
@@ -19,18 +20,14 @@ mongoose.connect(MongoUrl, {
   useCreateIndex: true,
   user: process.env.MONGO_USER,
   pass: process.env.MONGO_PWD  
-} );
+});
 const connection = mongoose.connection;
 
-const MongoStore = require('connect-mongo')(session);
-
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
 
 
 // Set CORS headers 
-
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
@@ -38,6 +35,10 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, X-PINGOTHER, Accept');
   next();
 });
+
+
+// Configure session and session store
+const MongoStore = require('connect-mongo')(session);
 
 app.use(
   session({
@@ -66,7 +67,7 @@ app.post('/register', async (req, res) => {
   })
   newUser.save()
   .then(() => {
-    res.json({"message": "success"})
+    res.json({'message': 'success'})
     console.log('Added new user:\n' + newUser);
   })
   .catch(err => {
@@ -88,20 +89,22 @@ app.post('/login', (req, res, next) => {
     else {
       req.logIn(user, (err) => {
         res.json({
-          "message": "success", 
-          "id": user.id
+          'message': 'success', 
+          'id': user.id
         })
       });
     }
   })(req, res, next);
 });
 
-
+// import routes and set middleware
 const timesRouter = require('./routes/timeRoutes');
 const workspacesRouter = require('./routes/workspaceRoutes');
+const analyticsRouter = require('./routes/analyticsRoutes');
 
 app.use('/times', timesRouter);
 app.use('/workspaces', workspacesRouter);
+app.use('/analytics', analyticsRouter);
 
 connection.once('open', () => {
   console.log('DB connection open');

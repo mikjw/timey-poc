@@ -1,12 +1,17 @@
 const router = require('express').Router();
 const Time = require('../models/time.model')
 const { checkAuthentication } = require('../helpers/authHelper');
-const mongo = require('../dao/times-mongo');
-let db = "";
+const mongo = require('../daos/times-mongo');
+let db = '';
 
-if (process.env.NODE_ENV !== "test") { 
+if (process.env.NODE_ENV !== 'test') { 
   db = mongo 
 }
+
+
+router.route('/').get((req, res) => {
+    res.status(200);
+})
 
 
 /**
@@ -16,7 +21,7 @@ if (process.env.NODE_ENV !== "test") {
 router.route('/all').get((req, res) => {
   db.getAllTimes(req, res)
   .then(times => {
-    res.json(times);
+    res.status(200).json(times);
   })
   .catch(err => res.status(400).json('Error: ' + err));
 })
