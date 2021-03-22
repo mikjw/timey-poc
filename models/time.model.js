@@ -15,8 +15,7 @@ const timeSchema = new Schema({
   },
   user: {
     type: String,
-    required: true,
-    immutable: true
+    required: true
   }
 });
 
