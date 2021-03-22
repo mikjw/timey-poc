@@ -67,7 +67,7 @@ app.post('/register', async (req, res) => {
   })
   newUser.save()
   .then(() => {
-    res.json({'message': 'success'})
+    res.status(200).json({'message': 'success'})
     console.log('Added new user:\n' + newUser);
   })
   .catch(err => {
@@ -85,10 +85,10 @@ app.post('/register', async (req, res) => {
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user) => {
     if (err) throw err;
-    if (!user) res.json('email or password invalid');
+    if (!user) res.status(403).json('email or password invalid');
     else {
       req.logIn(user, (err) => {
-        res.json({
+        res.status(200).json({
           'message': 'success', 
           'id': user.id
         })

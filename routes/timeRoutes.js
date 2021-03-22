@@ -9,11 +9,6 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 
-router.route('/').get((req, res) => {
-    res.status(200);
-})
-
-
 /**
  * get all times
  */
@@ -34,7 +29,7 @@ router.route('/all').get((req, res) => {
 router.route('/:id').get(checkAuthentication, (req, res) => {
   Time.findById(req.params.id)
   .then(time => {
-    res.json(time);
+    res.status(200).json(time);
   })
 })
 
@@ -46,7 +41,7 @@ router.route('/:id').get(checkAuthentication, (req, res) => {
 router.route('/user/:user').get(checkAuthentication, (req, res) => {
   Time.find({ user: req.params.user })
   .then(times => {
-    res.json(times);
+    res.status(200).json(times);
   })
   .catch(err => res.status(400).json('Error: ' + err));
 })
@@ -64,7 +59,7 @@ router.route('/add').post(checkAuthentication, (req, res) => {
   const newTime = new Time({ title, seconds, workspace, user });
 
   newTime.save()
-  .then(() => res.json(newTime._id))
+  .then(() => res.status(200).json(newTime._id))
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
@@ -79,7 +74,7 @@ router.route('/update/:id').post(checkAuthentication, (req, res) => {
       time.title = req.body.title;
       time.seconds = req.body.seconds;
       time.save()
-        .then(() => res.json(`${time.title} (ID ${req.params.id}) updated`))
+        .then(() => res.status(200).json(`${time.title} (ID ${req.params.id}) updated`))
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(400).json('Error: ' + err));
@@ -92,7 +87,7 @@ router.route('/update/:id').post(checkAuthentication, (req, res) => {
 
 router.route('/:id').delete(checkAuthentication, (req, res) => {
   Time.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Time deleted'))
+    .then(() => res.status(200).json('Time deleted'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 

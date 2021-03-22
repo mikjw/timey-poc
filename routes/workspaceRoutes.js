@@ -2,23 +2,37 @@ const router = require('express').Router();
 const Workspace = require('../models/workspace.model')
 const { checkAuthentication } = require('../helpers/authHelper');
 
+
+/**
+ * Get all workspaces
+ */
+
 router.route('/').get((req, res) => {
   Workspace.find()
   .then(workspaces => {
-    res.json(workspaces);
+    res.status(200).json(workspaces);
   })
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
+
+/**
+ * Create a new workspace
+ */
+
 router.route('/add').post(checkAuthentication, (req, res) => {
-  console.log(req.body);
   const name = req.body.name;
   const newWorkspace = new Workspace({ name });
 
   newWorkspace.save()
-  .then(() => res.json('Workspace added succesfully'))
+  .then(() => res.status(200).json('Workspace added succesfully'))
   .catch(err => res.status(400).json('Error: ' + err));
 })
+
+
+/**
+ * Udpate a workspace
+ */
 
 router.route('/update/:id').post(checkAuthentication, (req, res) => {
   Workspace.findById(req.params.id)
@@ -26,15 +40,20 @@ router.route('/update/:id').post(checkAuthentication, (req, res) => {
       workspace.name = req.body.name;
 
       workspace.save()
-        .then(() => res.json('Workspace updated successfully'))
+        .then(() => res.status(200).json('Workspace updated successfully'))
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+
+/**
+ * Delete a workspace
+ */
+
 router.route('/:id').delete(checkAuthentication, (req, res) => {
   Workspace.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Workspace deleted successfully'))
+    .then(() => res.status(200).json('Workspace deleted successfully'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
