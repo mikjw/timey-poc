@@ -7,20 +7,12 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 require('./passportConfig')(passport);
 const User = require('./models/user.model');
+const dbConfig = require('./dbConfig');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-
-// Establish mongodb connection
-const MongoUrl = process.env.MONGO_CONTAINER
-mongoose.connect(MongoUrl, { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true, 
-  useCreateIndex: true,
-  user: process.env.MONGO_USER,
-  pass: process.env.MONGO_PWD  
-});
+mongoose.connect(dbConfig.MongoUrl, dbConfig.MongoOptions);
 const connection = mongoose.connection;
 
 app.use(express.json());
@@ -98,15 +90,18 @@ app.post('/login', (req, res, next) => {
 });
 
 // import routes and set middleware
+const usersRouter = require('./routes/userRoutes');
 const timesRouter = require('./routes/timeRoutes');
 const workspacesRouter = require('./routes/workspaceRoutes');
 const analyticsRouter = require('./routes/analyticsRoutes');
 
+app.use('/users', usersRouter);
 app.use('/times', timesRouter);
 app.use('/workspaces', workspacesRouter);
 app.use('/analytics', analyticsRouter);
 
 connection.once('open', () => {
+  console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
   console.log('DB connection open');
 })
 .catch(err => {
