@@ -2,11 +2,6 @@ const router = require('express').Router();
 const Time = require('../models/time.model')
 const { checkAuthentication } = require('../helpers/authHelper');
 const mongo = require('../daos/times-mongo');
-let db = '';
-
-if (process.env.NODE_ENV !== 'test') { 
-  db = mongo 
-}
 
 
 /**
@@ -14,7 +9,7 @@ if (process.env.NODE_ENV !== 'test') {
  */
 
 router.route('/all').get((req, res) => {
-  db.getAllTimes(req, res)
+  Time.find().lean()
   .then(times => {
     res.status(200).json(times);
   })
