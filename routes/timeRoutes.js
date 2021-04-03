@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const Time = require('../models/time.model')
 const { checkAuthentication } = require('../helpers/authHelper');
-const mongo = require('../daos/times-mongo');
 
 
 /**
