@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const PostgresStore = require('connect-pg-simple');
 const timesMongoDao = require('./daos/timesMongo').timesMongoDao;
+const workspacesMongoDao = require('./daos/workspacesMongo').workspacesMongoDao;
 
-let MongoUrl, MongoOptions, connection, SessionStore, SessionStoreOptions, timeDao;
+let MongoUrl, MongoOptions, connection, SessionStore, SessionStoreOptions, timeDao, workspaceDao;
 
 
 /**
@@ -35,6 +36,7 @@ if (process.env.NODE_ENV === 'dev') {
   SessionStore = MongoStore;
   SessionStoreOptions = { mongooseConnection: connection, collection: 'sessions' };
   timeDao = new timesMongoDao();
+  workspaceDao = new workspacesMongoDao();
 
 
 
@@ -64,6 +66,7 @@ if (process.env.NODE_ENV === 'dev') {
   SessionStore = MongoStore;
   SessionStoreOptions = { mongooseConnection: connection, collection: 'sessions' };
   timeDao = new timesMongoDao();
+  workspaceDao = new workspacesMongoDao();
 
 
 
@@ -79,5 +82,6 @@ module.exports = {
   SessionStore,
   SessionStoreOptions, 
   connection,
-  timeDao
+  timeDao,
+  workspaceDao
 }

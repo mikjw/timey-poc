@@ -28,7 +28,7 @@ class timeService {
     const timeSeconds = Number(seconds);
     const timeWorkspace = workspace;
     const timeUser = user;
-    const newTime = new Time(null, timeTitle, timeSeconds, timeWorkspace, timeUser)
+    const newTime = new Time(null, timeTitle, timeSeconds, timeWorkspace, timeUser);
     return this.dao.createTime(newTime)
     .then(result => { return result })
     .catch(err => { throw err });
