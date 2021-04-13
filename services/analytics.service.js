@@ -2,7 +2,7 @@
  * Calculate count and average seconds for time records
  */
 
-function getAnalytics(input) {
+getAnalytics = (input) => {
   let result = 
   {
     "count" : 0,

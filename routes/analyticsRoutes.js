@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Time = require('../models/time.model')
+const Time = require('../mongoModels/time.model')
 const analyticsService = require('../services/analytics.service');
 const { checkAuthentication } = require('../helpers/authHelper');
 

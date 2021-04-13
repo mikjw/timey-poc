@@ -1,19 +1,15 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-const session = require('express-session')
+const session = require('express-session');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 require('./passportConfig')(passport);
-const User = require('./models/user.model');
+const User = require('./mongoModels/user.model');
 const dbConfig = require('./dbConfig');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
-
-mongoose.connect(dbConfig.MongoUrl, dbConfig.MongoOptions);
-const connection = mongoose.connection;
 
 app.use(express.json());
 app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
@@ -29,15 +25,15 @@ app.use((req, res, next) => {
 });
 
 
-// Configure session and session store
-const MongoStore = require('connect-mongo')(session);
+// Pass session instance to session store from config
+const SessionStore = dbConfig.SessionStore(session);
 
 app.use(
   session({
   secret: process.env.COOKIE_SECRET,
   resave: false,
   saveUninitialized: true,
-  store: new MongoStore({ mongooseConnection: connection, collection: 'sessions' }),
+  store: new SessionStore(dbConfig.SessionStoreOptions),
   cookie: {secure: false, httpOnly: true}
   })
 )
@@ -63,7 +59,7 @@ app.post('/register', async (req, res) => {
     console.log('Added new user:\n' + newUser);
   })
   .catch(err => {
-    console.error(err)
+    console.error(err);
   res.status(400).json(err)
   })
   req.session.email = req.body.email;
@@ -100,20 +96,14 @@ app.use('/times', timesRouter);
 app.use('/workspaces', workspacesRouter);
 app.use('/analytics', analyticsRouter);
 
-connection.once('open', () => {
-  console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
-  console.log('DB connection open');
-})
-.catch(err => {
-  console.log('error' + err);
-})
-
 app.get('/', (req, res) => {
   res.json('home');
 })
 
-app.listen(PORT, () => {
-  console.log(`Listenining on ${PORT}`);
-})
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.info(`Listenining on ${PORT}`);
+  })
+}
 
 module.exports = app;

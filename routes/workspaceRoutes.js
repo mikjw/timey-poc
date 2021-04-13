@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Workspace = require('../models/workspace.model')
+const Workspace = require('../mongoModels/workspace.model')
 const { checkAuthentication } = require('../helpers/authHelper');
 
 

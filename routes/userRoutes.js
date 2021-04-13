@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
-const User = require('../models/user.model');
+const User = require('../mongoModels/user.model');
 
 router.route('/').get((req, res) => {
   user = User.find()

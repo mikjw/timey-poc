@@ -1,6 +1,10 @@
 const router = require('express').Router();
-const Time = require('../models/time.model')
 const { checkAuthentication } = require('../helpers/authHelper');
+
+const dbConfig = require('../dbConfig');
+
+const Service = require('../services/timeService').timeService;
+const timeService = new Service(dbConfig.timeDao);
 
 
 /**
@@ -8,34 +12,34 @@ const { checkAuthentication } = require('../helpers/authHelper');
  */
 
 router.route('/all').get((req, res) => {
-  Time.find().lean()
-  .then(times => {
-    res.status(200).json(times);
+  timeService.getAllTimes()
+  .then(result => {
+    res.status(200).json(result);
+  })
+  .catch(err => res.status(400).json('Error: ' + err));
+});
+
+/**
+ * get a time by ID
+ */
+
+router.route('/:id').get(checkAuthentication, (req, res) => {
+  timeService.getTimeById(req.params.id)
+  .then(result => {
+    res.status(200).json(result);
   })
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
 
 /**
- * find a time by ID
- */
-
-router.route('/:id').get(checkAuthentication, (req, res) => {
-  Time.findById(req.params.id)
-  .then(time => {
-    res.status(200).json(time);
-  })
-})
-
-
-/**
- * find a time by user
+ * get a time by user
  */
 
 router.route('/user/:user').get(checkAuthentication, (req, res) => {
-  Time.find({ user: req.params.user })
-  .then(times => {
-    res.status(200).json(times);
+  timeService.getTimeByUserId(req.params.user)
+  .then(result => {
+    res.status(200).json(result);
   })
   .catch(err => res.status(400).json('Error: ' + err));
 })
@@ -47,14 +51,12 @@ router.route('/user/:user').get(checkAuthentication, (req, res) => {
 
 router.route('/add').post(checkAuthentication, (req, res) => {
   const title = req.body.title;
-  const seconds = Number(req.body.seconds);
+  const seconds = req.body.seconds;
   const workspace = req.body.workspace;
   const user = req.body.user;
-  const newTime = new Time({ title, seconds, workspace, user });
-
-  newTime.save()
-  .then(() => res.status(200).json(newTime._id))
-  .catch(err => res.status(400).json('Error: ' + err));
+  timeService.createTime(title, seconds, workspace, user)
+  .then((result) => res.status(200).json(result._id))
+  .catch(err => res.status(400).json(err));
 })
 
 
@@ -63,24 +65,19 @@ router.route('/add').post(checkAuthentication, (req, res) => {
  */
 
 router.route('/update/:id').post(checkAuthentication, (req, res) => {
-  Time.findById(req.params.id)
-    .then(time => {
-      time.title = req.body.title;
-      time.seconds = req.body.seconds;
-      time.save()
-        .then(() => res.status(200).json(`${time.title} (ID ${req.params.id}) updated`))
-        .catch(err => res.status(400).json('Error: ' + err));
-    })
-    .catch(err => res.status(400).json('Error: ' + err));
+  timeService.updateTimeById(req.params.id, req.body.title, req.body.seconds)
+  .then(result => {
+    res.status(201).json(result);
+  })
+  .catch(err => res.status(400).json('Error: ' + err));
 })
 
-
 /**
- * update a time record
+ * delete a time record
  */
 
 router.route('/:id').delete(checkAuthentication, (req, res) => {
-  Time.findByIdAndDelete(req.params.id)
+  timeService.deleteTimeById(req.params.id)
     .then(() => res.status(200).json('Time deleted'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
