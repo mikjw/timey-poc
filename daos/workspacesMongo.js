@@ -5,7 +5,10 @@ class workspacesMongoDao{
   getAllWorkspaces = () => {
     return MongooseWorkspace.find()
     .then(result => { return result })
-    .catch(err => { throw err });
+    .catch(err => { 
+      console.log('dao error: ', err)
+      throw err; 
+    });
   }
 
   createWorkspace = (workspace) => {
@@ -14,7 +17,10 @@ class workspacesMongoDao{
     const newMongooseWorkspace = new MongooseWorkspace({ name });
     return newMongooseWorkspace.save()
     .then(result => { return result })
-    .catch(err => { throw err });
+    .catch(err => { 
+      console.log('dao error: ', err)
+      throw err; 
+    });
   }
 
   updateWorkspaceById = (id, name) => {
