@@ -1,11 +1,13 @@
 
 const mongoose = require('mongoose');
+const Pool = require('pg').Pool
 const MongoStore = require('connect-mongo');
 const PostgresStore = require('connect-pg-simple');
 const timesMongoDao = require('./daos/timesMongo').timesMongoDao;
 const workspacesMongoDao = require('./daos/workspacesMongo').workspacesMongoDao;
+const timesPgDao = require('./daos/timesPg').timesPgDao;
 
-let MongoUrl, MongoOptions, connection, SessionStore, SessionStoreOptions, timeDao, workspaceDao;
+let MongoUrl, MongoOptions, connection, SessionStore, SessionStoreOptions, timeDao, workspaceDao, pool;
 
 
 /**
@@ -20,7 +22,7 @@ if (process.env.NODE_ENV === 'dev') {
     useCreateIndex: true,
     user: process.env.MONGO_USER,
     pass: process.env.MONGO_PWD  
-  }
+  };
 
   mongoose.connect(MongoUrl, MongoOptions);
   connection = mongoose.connection;
@@ -31,7 +33,7 @@ if (process.env.NODE_ENV === 'dev') {
   })
   .catch(err => {
     console.log('error' + err);
-  })
+  });
 
   SessionStore = MongoStore;
   SessionStoreOptions = { mongooseConnection: connection, collection: 'sessions' };
@@ -61,7 +63,7 @@ if (process.env.NODE_ENV === 'dev') {
   })
   .catch(err => {
     console.log('error' + err);
-  })
+  });
 
   SessionStore = MongoStore;
   SessionStoreOptions = { mongooseConnection: connection, collection: 'sessions' };
@@ -71,11 +73,22 @@ if (process.env.NODE_ENV === 'dev') {
 
 
 /**
- * POSTGRES testing - use pg-express
+ * POSTGRES - use pg-express
  */
 
 } else if (process.env.NODE_ENV === 'pg') {
+  pool = new Pool({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DATABASE,
+    password: process.env.PG_PASSWORD,
+    port: 5432
+  });
+
   SessionStore = PostgresStore;
+  SessionStoreOptions = {pool: pool}
+
+  timeDao = new timesPgDao(pool);
 }
 
 module.exports = {
@@ -83,5 +96,6 @@ module.exports = {
   SessionStoreOptions, 
   connection,
   timeDao,
-  workspaceDao
+  workspaceDao, 
+  pool
 }
