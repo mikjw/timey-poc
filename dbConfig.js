@@ -2,12 +2,16 @@
 const mongoose = require('mongoose');
 const Pool = require('pg').Pool
 const MongoStore = require('connect-mongo');
-const PostgresStore = require('connect-pg-simple');
+const postgresStore = require('connect-pg-simple');
 const timesMongoDao = require('./daos/timesMongo').timesMongoDao;
 const workspacesMongoDao = require('./daos/workspacesMongo').workspacesMongoDao;
+const workspacesPgDao = require('./daos/workspacesPg').workspacesPgDao;
 const timesPgDao = require('./daos/timesPg').timesPgDao;
+const usersMongoDao = require('./daos/usersMongo').usersMongoDao;
+const usersPgDao = require('./daos/usersPg').usersPgDao;
 
-let MongoUrl, MongoOptions, connection, SessionStore, SessionStoreOptions, timeDao, workspaceDao, pool;
+let MongoUrl, MongoOptions, connection, SessionStore, SessionStoreOptions, timeDao, workspaceDao, userDao, pool;
+
 
 
 /**
@@ -39,6 +43,8 @@ if (process.env.NODE_ENV === 'dev') {
   SessionStoreOptions = { mongooseConnection: connection, collection: 'sessions' };
   timeDao = new timesMongoDao();
   workspaceDao = new workspacesMongoDao();
+  userDao = new usersMongoDao();
+}
 
 
 
@@ -46,7 +52,7 @@ if (process.env.NODE_ENV === 'dev') {
  * STAGING - use MongoDB Atlas cloud storage
  */
 
-} else if (process.env.NODE_ENV === 'staging') {
+else if (process.env.NODE_ENV === 'staging') {
   MongoUrl = process.env.ATLAS_URI;
   MongoOptions = { 
     useNewUrlParser: true, 
@@ -69,26 +75,53 @@ if (process.env.NODE_ENV === 'dev') {
   SessionStoreOptions = { mongooseConnection: connection, collection: 'sessions' };
   timeDao = new timesMongoDao();
   workspaceDao = new workspacesMongoDao();
+  userDao = new usersMongoDao();
+}
 
 
 
 /**
- * POSTGRES - use pg-express
+ * PG - use postgres db running in local container
  */
 
-} else if (process.env.NODE_ENV === 'pg') {
+else if (process.env.NODE_ENV === 'pg') {
   pool = new Pool({
     user: process.env.PG_USER,
     host: process.env.PG_HOST,
     database: process.env.PG_DATABASE,
     password: process.env.PG_PASSWORD,
-    port: 5432
+    port: process.env.PG_PORT
   });
 
-  SessionStore = PostgresStore;
+  SessionStore = postgresStore;
   SessionStoreOptions = {pool: pool}
 
   timeDao = new timesPgDao(pool);
+  userDao = new usersPgDao(pool);
+  workspaceDao = new workspacesPgDao(pool);
+}
+
+
+
+/**
+ * TEST - use postgres test db running in local container
+ */
+
+else if (process.env.NODE_ENV === 'test') {
+  pool = new Pool({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_TEST_DATABASE,
+    password: process.env.PG_PASSWORD,
+    port: process.env.PG_PORT
+  });
+
+  SessionStore = postgresStore;
+  SessionStoreOptions = {pool: pool}
+
+  timeDao = new timesPgDao(pool);
+  userDao = new usersPgDao(pool);
+  workspaceDao = new workspacesPgDao(pool);
 }
 
 module.exports = {
@@ -97,5 +130,5 @@ module.exports = {
   connection,
   timeDao,
   workspaceDao, 
-  pool
+  userDao
 }

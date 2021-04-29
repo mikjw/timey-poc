@@ -2,8 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
-const passport = require('passport');
+const passport = require('./routes/authRoutes').passport;
 require('./passportConfig')(passport);
 const User = require('./mongoModels/user.model');
 const dbConfig = require('./dbConfig');
@@ -38,65 +37,25 @@ app.use(
   })
 )
 
+
 app.use(passport.initialize());
 app.use(passport.session());
 
 
-/**
- * Register a new user 
- */
-
-app.post('/register', async (req, res) => {
-  const email = req.body.email;
-  const password = await bcrypt.hash(req.body.password, 12);
-  const newUser = new User({
-    email,
-    password
-  })
-  newUser.save()
-  .then(() => {
-    res.status(200).json({'message': 'success'})
-    console.log('Added new user:\n' + newUser);
-  })
-  .catch(err => {
-    console.error(err);
-  res.status(400).json(err)
-  })
-  req.session.email = req.body.email;
-});
-
-
-/**
- * Log in with user details 
- */
-
-app.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user) => {
-    if (err) throw err;
-    if (!user) res.status(403).json('email or password invalid');
-    else {
-      req.logIn(user, (err) => {
-        res.status(200).json({
-          'message': 'success', 
-          'id': user.id
-        })
-      });
-    }
-  })(req, res, next);
-});
-
-// import routes and set middleware
+// import routes and set as middleware
+const authRouter = require('./routes/authRoutes').router;
 const usersRouter = require('./routes/userRoutes');
 const timesRouter = require('./routes/timeRoutes');
 const workspacesRouter = require('./routes/workspaceRoutes');
 const analyticsRouter = require('./routes/analyticsRoutes');
 
+app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/times', timesRouter);
 app.use('/workspaces', workspacesRouter);
 app.use('/analytics', analyticsRouter);
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) => {s
   res.json('home');
 })
 

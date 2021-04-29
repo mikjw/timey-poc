@@ -8,7 +8,7 @@ const timeService = new Service(dbConfig.timeDao);
 
 
 /**
- * get all times
+ * Get all times
  */
 
 router.route('/all').get((req, res) => {
@@ -19,8 +19,9 @@ router.route('/all').get((req, res) => {
   .catch(err => res.status(400).json('Error: ' + err));
 });
 
+
 /**
- * get a time by ID
+ * Get a time by ID
  */
 
 router.route('/:id').get(checkAuthentication, (req, res) => {
@@ -33,11 +34,11 @@ router.route('/:id').get(checkAuthentication, (req, res) => {
 
 
 /**
- * get a time by user
+ * Get all times for a user
  */
 
 router.route('/user/:user').get(checkAuthentication, (req, res) => {
-  timeService.getTimeByUserId(req.params.user)
+  timeService.getTimesByUserId(req.params.user)
   .then(result => {
     res.status(200).json(result);
   })
@@ -46,34 +47,35 @@ router.route('/user/:user').get(checkAuthentication, (req, res) => {
 
 
 /**
- * save a new time record
+ * Save a new time record
  */
 
-router.route('/add').post(checkAuthentication, (req, res) => {
+router.route('/add').post( (req, res) => {
   const title = req.body.title;
   const seconds = req.body.seconds;
   const workspace = req.body.workspace;
   const user = req.body.user;
   timeService.createTime(title, seconds, workspace, user)
-  .then((result) => res.status(200).json(result._id))
+  .then((result) => res.status(200).json(result.id))
   .catch(err => res.status(400).json(err));
 })
 
 
 /**
- * update a time record
+ * Update a time record
  */
 
 router.route('/update/:id').post(checkAuthentication, (req, res) => {
   timeService.updateTimeById(req.params.id, req.body.title, req.body.seconds)
   .then(result => {
-    res.status(201).json(result);
+    res.status(200).json(result);
   })
   .catch(err => res.status(400).json('Error: ' + err));
 })
 
+
 /**
- * delete a time record
+ * Delete a time record
  */
 
 router.route('/:id').delete(checkAuthentication, (req, res) => {

@@ -12,7 +12,7 @@ const workspaceService = new Service(dbConfig.workspaceDao);
  * Get all workspaces
  */
 
-router.route('/').get((req, res) => {
+router.route('/all').get((req, res) => {
   workspaceService.getAllWorkspaces()
   .then(result => {
     res.status(200).json(result);
@@ -22,7 +22,7 @@ router.route('/').get((req, res) => {
 
 
 /**
- * Create a new workspace
+ * Save a new workspace record
  */
 
 router.route('/add').post(checkAuthentication, (req, res) => {
